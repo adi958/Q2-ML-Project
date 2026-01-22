@@ -66,14 +66,12 @@ for epoch in range(100):
     loss = rsw_loss(outputs, y_tr, model)
     loss.backward()
     
-    # PRIORITY: Force objective features to have 1.5x influence on learning
     model.linear_obj.weight.grad *= 1.5 
     
     optimizer.step()
     if (epoch + 1) % 20 == 0:
         print(f"Epoch {epoch+1}/100 | Loss: {loss.item():.4f}")
 
-# 5. EVALUATE
 model.eval()
 with torch.no_grad():
     probs = model(X_obj_te, X_subj_te).numpy()
@@ -92,13 +90,12 @@ print("\nClassification Report:")
 print(classification_report(y_te, preds))
 
 roc_area = roc_auc_score(y_te, probs)
-prc_area = average_precision_score(y_te, probs)   # PRC Area
+prc_area = average_precision_score(y_te, probs)  
 mcc = matthews_corrcoef(y_te, preds)
-recall = recall_score(y_te, preds)                 # TPR
+recall = recall_score(y_te, preds)              
 precision = precision_score(y_te, preds)
 f1 = f1_score(y_te, preds)
 
-# PRINT RESULTS
 print("\n--- Evaluation Metrics ---")
 print(f"ROC Area (AUC):                {roc_area:.3f}")
 print(f"Precision–Recall Curve Area:   {prc_area:.3f}")
